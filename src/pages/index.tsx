@@ -1,35 +1,26 @@
 import Head from 'next/head';
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 import { GetStaticProps } from 'next';
+import { useState } from 'react';
+import { Characters } from '../components/Characters';
+import { Props } from '../../type';
 
-interface Props {
-  id: number;
-  name: string;
-  location: {
-    id: number;
-    name: string;
-  };
-  origin: {
-    id: number;
-    name: string;
-  };
-  episode: {
-    id: number;
-    episode: string;
-    air_date: string;
-  };
-}
+const Home: React.FC<Props> = (results) => {
+  const initialState = results;
+  console.log(initialState);
 
-const Home: React.FC<Props> = ({ characters }) => {
-  console.log(characters);
+  const [characters, setCharacters] = useState(initialState.characters);
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center py-2'>
+    <div className='mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center py-2'>
       <Head>
         <title>Create Next App</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
+      <div className='pb-12'>
+        <Characters characters={characters} />
+      </div>
       <footer className='flex h-24 w-full items-center justify-center border-t'>
         <a
           className='flex items-center justify-center'
@@ -46,7 +37,7 @@ const Home: React.FC<Props> = ({ characters }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const client = new ApolloClient({
-    uri: 'https://rickandmortyapi.com/graphql/',
+    uri: process.env.NEXT_PUBLIC_URI,
     cache: new InMemoryCache(),
   });
 
@@ -60,6 +51,7 @@ export const getStaticProps: GetStaticProps = async () => {
           }
           results {
             name
+            image
             id
             location {
               id
